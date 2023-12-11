@@ -1,9 +1,48 @@
 import React from "react";
 
-function AddTransactionForm() {
+function AddTransactionForm({ addTransaction }) {
+
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+  
+    const { date, description, category, amount } = event.target;
+  
+    
+    const newTransaction = {
+      date: date.value,
+      description: description.value,
+      category: category.value,
+      amount: amount.value,
+    };
+  
+    addTransaction(newTransaction);
+  
+    
+    event.target.reset();
+  
+    try {
+      
+      const response = await fetch('http://localhost:8001/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTransaction),
+      });
+  
+      
+      const data = await response.json();
+      console.log(data);
+  
+      addTransaction(newTransaction);
+    } catch (error) {
+      
+      console.error('Error:', error);
+    }
+  };
+
+  
   return (
     <div className="ui segment">
-      <form className="ui form">
+      <form className="ui form" onSubmit={handleFormSubmit}>
         <div className="inline fields">
           <input type="date" name="date" />
           <input type="text" name="description" placeholder="Description" />
